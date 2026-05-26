@@ -34,11 +34,51 @@ public class TransactionService {
         return mapToResponse(saved);
 
     }
+    public TransactionResponse getUserTransaction(Long id,User user){
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(
+                ()-> new RuntimeException("Transaction not found")
+        );
+        if (!transaction.getUser().getId().equals(user.getId())){
+            throw new RuntimeException("Unauthorized");
+        }
+        return mapToResponse(transaction);
+
+    }
     public List<TransactionResponse> getUserTransactions(User user){
         return transactionRepository.findByUserOrderByTransactionDateDesc(user)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+    public void deleteTransaction(Long id,User user){
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(
+                ()   -> new RuntimeException("Transaction not found")
+        );
+        if(!transaction.getUser().getId().equals(user.getId())){
+            throw new RuntimeException("Unauthorized");
+        }
+        transactionRepository.delete(transaction);
+    }
+    public TransactionResponse updateTransaction(Long id,TransactionRequest request,User user){
+        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(()-> new RuntimeException("Category not found"));
+
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(()->
+                new RuntimeException("Transaction not found")
+        );
+        if(!transaction.getUser().getId().equals(user.getId())){
+            throw new RuntimeException("Unauthorized");
+        }
+        transaction.setAmount(request.getAmount());
+        transaction.setDescription(request.getDescription());
+        transaction.setCategory(category);
+        transaction.setType(request.getType());
+        transaction.setTransactionDate(request.getTransactionDate());
+
+
+        Transaction saved = transactionRepository.save(transaction);
+        return mapToResponse(saved);
+
+
     }
     private TransactionResponse mapToResponse(Transaction transaction){
         return TransactionResponse.builder()

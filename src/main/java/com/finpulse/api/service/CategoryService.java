@@ -26,11 +26,41 @@ public class CategoryService {
         return mapToResponse(saved);
     }
 
+    public CategoryResponse getUserCategory(Long id,User user){
+        Category category = categoryRepository.findById(id).orElseThrow(
+                ()-> new RuntimeException("Category not found")
+        );
+        if (!category.getUser().getId().equals(user.getId())){
+            throw new RuntimeException("Unauthorized");
+        }
+        return mapToResponse(category);
+    }
+
     public List<CategoryResponse> getUserCategories(User user){
         return  categoryRepository.findByUser(user)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+    public CategoryResponse updateCategory(Long id,CategoryRequest request,User user){
+        Category category = categoryRepository.findById(id).orElseThrow(
+                ()-> new RuntimeException("Category not found")
+        );
+        if(!category.getUser().getId().equals(user.getId())){
+            throw new RuntimeException("Unauthorized");
+        }
+        category.setName(request.getName());
+        category.setType(request.getType());
+        categoryRepository.save(category);
+        return mapToResponse(category);
+    }
+    public void deleteCategory(Long id,User user){
+        Category category = categoryRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Category not found")) ;
+        if(!category.getUser().getId().equals(user.getId())){
+            throw new RuntimeException("Unauthorized");
+        }
+        categoryRepository.delete(category);
     }
     private CategoryResponse mapToResponse(Category category){
         return  CategoryResponse.builder().id(category.getId())
