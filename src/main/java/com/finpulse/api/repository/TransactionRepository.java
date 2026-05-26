@@ -1,5 +1,6 @@
 package com.finpulse.api.repository;
 
+import com.finpulse.api.entity.Category;
 import com.finpulse.api.entity.Transaction;
 import com.finpulse.api.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +22,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     @Query("SELECT COALESCE(sum(t.amount),0) FROM Transaction t Where t.user = :user AND t.type = :type AND MONTH(t.transactionDate) = MONTH(CURRENT_DATE) AND YEAR(t.transactionDate) = YEAR(CURRENT_DATE)")
     BigDecimal sumByUserAndTypeThisMonth(@Param("user")User user,@Param("type") Transaction.TransactionType type);
+
+    List<Transaction> findByCategory(Category category);
 
 
 

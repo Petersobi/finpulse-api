@@ -3,8 +3,10 @@ package com.finpulse.api.service;
 import com.finpulse.api.dto.CategoryRequest;
 import com.finpulse.api.dto.CategoryResponse;
 import com.finpulse.api.entity.Category;
+import com.finpulse.api.entity.Transaction;
 import com.finpulse.api.entity.User;
 import com.finpulse.api.repository.CategoryRepository;
+import com.finpulse.api.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final TransactionRepository transactionRepository;
 
     public CategoryResponse createCategory(CategoryRequest request, User user){
         Category category = Category.builder()
@@ -60,6 +63,14 @@ public class CategoryService {
         if(!category.getUser().getId().equals(user.getId())){
             throw new RuntimeException("Unauthorized");
         }
+        List<Transaction> transactions = transactionRepository.findByCategory(category);
+        if (!transactions.isEmpty()) {
+            throw new RuntimeException(
+                    "Cannot delete category with existing transactions. " +
+                            "Please reassign or delete the transactions first."
+            );
+        }
+
         categoryRepository.delete(category);
     }
     private CategoryResponse mapToResponse(Category category){
