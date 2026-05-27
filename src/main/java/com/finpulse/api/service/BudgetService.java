@@ -76,7 +76,7 @@ public class BudgetService {
         return BudgetResponse.builder()
                 .id(budget.getId())
                 .categoryName(budget.getCategory().getName())
-                .yearMonth(budget.getBudgetMonth())
+                .budgetMonth(budget.getBudgetMonth())
                 .amount(budget.getAmount())
                 .build();
     }
