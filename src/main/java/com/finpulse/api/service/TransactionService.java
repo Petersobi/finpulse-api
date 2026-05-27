@@ -10,6 +10,9 @@ import com.finpulse.api.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +47,29 @@ public class TransactionService {
         return mapToResponse(transaction);
 
     }
+
+    public List<TransactionResponse> getUserTransactionsForMonth(YearMonth month,User user){
+        LocalDateTime startDate = month.atDay(1).atStartOfDay();
+        LocalDateTime endDate = month.atEndOfMonth().atTime(23, 59, 59);
+        return  transactionRepository.findByUserAndTransactionDateBetween(user, startDate, endDate)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<TransactionResponse> getUserTransactionsForPeriod(LocalDate startDate,LocalDate endDate,User user){
+        if (endDate.isBefore(startDate)) {
+            throw new RuntimeException("End date cannot be before start date");
+        }
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(23, 59, 59);
+        return  transactionRepository.findByUserAndTransactionDateBetween(user, start, end)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+
+    }
+
     public List<TransactionResponse> getUserTransactions(User user){
         return transactionRepository.findByUserOrderByTransactionDateDesc(user)
                 .stream()

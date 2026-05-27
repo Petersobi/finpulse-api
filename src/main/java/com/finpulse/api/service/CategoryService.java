@@ -73,6 +73,7 @@ public class CategoryService {
 
         categoryRepository.delete(category);
     }
+
     private CategoryResponse mapToResponse(Category category){
         return  CategoryResponse.builder().id(category.getId())
                 .name(category.getName())

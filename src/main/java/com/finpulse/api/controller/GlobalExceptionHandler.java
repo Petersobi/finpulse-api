@@ -1,6 +1,7 @@
 package com.finpulse.api.controller;
 
 import com.finpulse.api.dto.ErrorResponse;
+import com.finpulse.api.service.DuplicateBudgetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -48,5 +49,10 @@ public class GlobalExceptionHandler {
                         .message(errors)
                         .timestamp(LocalDateTime.now())
                         .build());
+    }
+    @ExceptionHandler(DuplicateBudgetException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateBudget(DuplicateBudgetException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(HttpStatus.CONFLICT.value(),ex.getMessage(),LocalDateTime.now()));
     }
 }
