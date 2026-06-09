@@ -19,12 +19,17 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final TransactionRepository transactionRepository;
 
-    public CategoryResponse createCategory(CategoryRequest request, User user){
+    public CategoryResponse createCategory(CategoryRequest request, User user) {
+        if (categoryRepository.existsByNameAndUser(request.getName(), user)) {
+            throw new DuplicateCategoryException("Category '" + request.getName() + "' already exists");
+        }
+
         Category category = Category.builder()
-                .name(request.getName())
+                .name(request.getName().toLowerCase().trim())
                 .type(request.getType())
                 .user(user)
                 .build();
+
         Category saved = categoryRepository.save(category);
         return mapToResponse(saved);
     }
@@ -52,7 +57,7 @@ public class CategoryService {
         if(!category.getUser().getId().equals(user.getId())){
             throw new RuntimeException("Unauthorized");
         }
-        category.setName(request.getName());
+        category.setName(request.getName().toLowerCase().trim());
         category.setType(request.getType());
         categoryRepository.save(category);
         return mapToResponse(category);
@@ -74,9 +79,12 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
 
-    private CategoryResponse mapToResponse(Category category){
-        return  CategoryResponse.builder().id(category.getId())
-                .name(category.getName())
+    private CategoryResponse mapToResponse(Category category) {
+        String displayName = category.getName().substring(0, 1).toUpperCase()
+                + category.getName().substring(1);
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .name(displayName)
                 .type(category.getType())
                 .build();
     }

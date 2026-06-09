@@ -8,7 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "categories",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {
+                        "user_id","name"
+                })
+        })
 @Data
 @Builder
 @NoArgsConstructor
