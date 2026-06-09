@@ -29,7 +29,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(request -> {
             var config = new org.springframework.web.cors.CorsConfiguration();
-            config.setAllowedOrigins(java.util.List.of("https://finpulse-ui.netlify.app"));
+            config.setAllowedOrigins(java.util.List.of("http://localhost:5173","https://finpulse-ui.netlify.app"));
             config.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","OPTIONS"));
             config.setAllowedHeaders(java.util.List.of("*"));
             config.setAllowCredentials(true);
