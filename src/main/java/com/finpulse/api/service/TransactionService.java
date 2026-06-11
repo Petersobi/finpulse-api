@@ -107,13 +107,15 @@ public class TransactionService {
 
     }
     private TransactionResponse mapToResponse(Transaction transaction){
+        String displayName = transaction.getCategory().getName().substring(0, 1).toUpperCase()
+                + transaction.getCategory().getName().substring(1);
         return TransactionResponse.builder()
                 .id(transaction.getId())
                 .description(transaction.getDescription())
                 .amount(transaction.getAmount())
                 .type(transaction.getType())
                 .transactionDate(transaction.getTransactionDate())
-                .categoryName(transaction.getCategory().getName())
+                .categoryName(displayName)
                 .createdAt(transaction.getCreatedAt())
                 .build();
     }
