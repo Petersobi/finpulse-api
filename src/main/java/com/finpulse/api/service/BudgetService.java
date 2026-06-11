@@ -73,9 +73,11 @@ public class BudgetService {
         budgetRepository.delete(budget);
     }
     private BudgetResponse mapToResponse(Budget budget){
+        String displayName = budget.getCategory().getName().substring(0, 1).toUpperCase()
+                + budget.getCategory().getName().substring(1);
         return BudgetResponse.builder()
                 .id(budget.getId())
-                .categoryName(budget.getCategory().getName())
+                .categoryName(displayName)
                 .budgetMonth(budget.getBudgetMonth())
                 .amount(budget.getAmount())
                 .build();
